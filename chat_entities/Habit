@@ -1,0 +1,64 @@
+{
+  "name": "Habit",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the habit"
+    },
+    "points": {
+      "type": "number",
+      "default": 10,
+      "description": "Points earned for completing this habit"
+    },
+    "icon": {
+      "type": "string",
+      "default": "star",
+      "description": "Icon identifier for the habit"
+    },
+    "color": {
+      "type": "string",
+      "default": "violet",
+      "description": "Color theme for the habit"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the habit is currently active"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "custom"
+      ],
+      "default": "daily",
+      "description": "How often the habit repeats"
+    },
+    "frequency_days": {
+      "type": "number",
+      "default": 1,
+      "description": "For custom frequency: repeat every X days"
+    },
+    "frequency_weekdays": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "For weekly frequency: which weekdays (0=Mon, 6=Sun)"
+    },
+    "rotation_owner": {
+      "type": "string",
+      "description": "Email of primary responsible person"
+    },
+    "rotation_days": {
+      "type": "number",
+      "default": 0,
+      "description": "Rotate responsibility every X days (0 = no rotation)"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

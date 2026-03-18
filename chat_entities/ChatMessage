@@ -1,0 +1,13 @@
+{
+  "name": "ChatMessage",
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "description": "Message text"
+    }
+  },
+  "required": [
+    "text"
+  ]
+}
