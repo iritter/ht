@@ -12,6 +12,7 @@ import DailyProgress from '@/components/habits/DailyProgress';
 import HabitCard from '@/components/habits/HabitCard';
 import AddHabitDialog from '@/components/habits/AddHabitDialog';
 import PartnerSettings, { getPartnerEmail } from '@/components/habits/PartnerSettings';
+import UserProfileSettings from '@/components/UserProfileSettings';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 
@@ -129,6 +130,7 @@ export default function Dashboard() {
                 <BarChart2 className="w-5 h-5" />
               </Button>
             </Link>
+            <UserProfileSettings onSave={setCurrentUser} />
             <PartnerSettings onSave={() => setPartnerEmail(getPartnerEmail())} />
             <AddHabitDialog
               onAdd={(data) => addMutation.mutateAsync(data)}

@@ -1,6 +1,43 @@
 // Local mock – no Base44 account needed. Data is stored in localStorage.
 
-const LOCAL_USER = { id: 'local-user-1', email: 'user@local.app', full_name: 'Local User' };
+const LOCAL_USER_STORAGE_KEY = 'ht_local_user';
+const DEFAULT_LOCAL_USER = { id: 'local-user-1', email: 'user@local.app', full_name: 'Local User' };
+
+function getLocalUser() {
+  try {
+    const raw = localStorage.getItem(LOCAL_USER_STORAGE_KEY);
+    if (!raw) return DEFAULT_LOCAL_USER;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.email || !parsed?.full_name) return DEFAULT_LOCAL_USER;
+    return {
+      id: parsed.id || DEFAULT_LOCAL_USER.id,
+      email: String(parsed.email),
+      full_name: String(parsed.full_name),
+    };
+  } catch {
+    return DEFAULT_LOCAL_USER;
+  }
+}
+
+function setLocalUser({ full_name, email }) {
+  const current = getLocalUser();
+  const next = {
+    id: current.id || uid(),
+    full_name: String(full_name || current.full_name || '').trim(),
+    email: String(email || current.email || '').trim().toLowerCase(),
+  };
+
+  if (!next.full_name || !next.email) {
+    return Promise.reject(new Error('Name und E-Mail sind erforderlich.'));
+  }
+
+  localStorage.setItem(LOCAL_USER_STORAGE_KEY, JSON.stringify(next));
+  return Promise.resolve(next);
+}
+
+function hasCustomLocalUser() {
+  return !!localStorage.getItem(LOCAL_USER_STORAGE_KEY);
+}
 
 function uid() {
   return Math.random().toString(36).slice(2, 9) + Date.now().toString(36);
@@ -39,11 +76,12 @@ function createEntityStore(name) {
 
     create: (data) => {
       const items = getAll();
+      const localUser = getLocalUser();
       const newItem = {
         ...data,
         id: uid(),
         created_date: new Date().toISOString(),
-        created_by: LOCAL_USER.email,
+        created_by: localUser.email,
       };
       items.push(newItem);
       saveAll(items);
@@ -74,7 +112,9 @@ function createEntityStore(name) {
 
 export const base44 = {
   auth: {
-    me: () => Promise.resolve(LOCAL_USER),
+    me: () => Promise.resolve(getLocalUser()),
+    setLocalUser,
+    hasCustomLocalUser,
     logout: () => {},
     redirectToLogin: () => {},
   },

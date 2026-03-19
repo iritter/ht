@@ -1,22 +1,40 @@
-import React, { createContext, useContext } from 'react';
-
-// Local user – no Base44 account needed
-const LOCAL_USER = { id: 'local-user-1', email: 'user@local.app', full_name: 'Local User' };
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { base44 } from '@/api/base44Client';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  const refreshUser = async () => {
+    const me = await base44.auth.me();
+    setUser(me);
+    return me;
+  };
+
+  const updateLocalUser = async (profile) => {
+    const updated = await base44.auth.setLocalUser(profile);
+    setUser(updated);
+    return updated;
+  };
+
+  useEffect(() => {
+    refreshUser().catch(() => {});
+  }, []);
+
   return (
     <AuthContext.Provider value={{
-      user: LOCAL_USER,
+      user,
       isAuthenticated: true,
-      isLoadingAuth: false,
+      isLoadingAuth: !user,
       isLoadingPublicSettings: false,
       authError: null,
       appPublicSettings: null,
       logout: () => {},
       navigateToLogin: () => {},
       checkAppState: () => {},
+      refreshUser,
+      updateLocalUser,
     }}>
       {children}
     </AuthContext.Provider>
